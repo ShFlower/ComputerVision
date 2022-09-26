@@ -1,0 +1,13 @@
+    countdown_message = f"""
+                {'*'*50}  
+
+                 : The game will read your sign in 3 seconds
+
+                {'*'*50}
+             """
+    nodetect_message = f"""
+                {'*'*50}  
+
+                 : The computer did not detect a clear sign try again
+                {'*'*50}
+             """
