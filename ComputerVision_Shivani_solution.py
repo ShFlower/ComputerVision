@@ -10,11 +10,8 @@ class RockPaperScissors:
     def __init__(self, max_score, countdown):
         
         self.choices = ['Nothing' , 'Rock' ,'Paper' , 'Scissors']
-        print(f"choices array equals : {self.choices}")
-
+    
         self.no_of_choices = len(self.choices)
-        print(f"no_of_choices = {self.no_of_choices}")
-
         self.max_score = max_score
         self.countdown = countdown
                       
@@ -29,9 +26,7 @@ class RockPaperScissors:
 
     # gets the user input from camera and returns a array showing the likelihood scores
     def get_user_input(self):
-        #user_choice = self.choices[random.randint(0,self.no_of_choices-1)]
-        #print(f" User chose: {user_choice}")
-        
+                
         ###for countdown seconds delay 
         close_time=time.time() + self.countdown
         
@@ -47,18 +42,14 @@ class RockPaperScissors:
                 prediction = self.model.predict(self.data)
                 cv2.imshow('frame', frame)
                 print(f"Prediction: {prediction}")
-                #determine the predicted user input ny referencing choice
-                #choice_pos = prediction.argmax(axis=1)
-                #print(f"choice_pos: {choice_pos}")
                 user_choice = self.choices[prediction.argmax(axis=1)[0]]
-                print(f"User choice: {user_choice}")
+                
                 
         return user_choice
        
 
     def get_computer_input(self):
         computer_choice = self.choices[random.randint(0,self.no_of_choices-1)]
-        print(f" Computer chose: {computer_choice}")
         return computer_choice 
 
     def cleanup(self):
@@ -74,28 +65,33 @@ def play_game():
     #define all the game messages
     start_message = f"""
                 {'*'*50} 
-                Let's play Rock Paper Scissors!
+                            Let's play Rock Paper Scissors!
                 The first player to reach {game.max_score} points wins the game!! 
                 {'*'*50}
              """
 
     countdown_message = f"""
                 {'*'*50}  
-                The game will read your sign in {game.countdown} seconds
+                    The camera will read your choice in {game.countdown} seconds
                 {'*'*50}
              """
 
     nodetect_message = f"""
-                {'*'*70}  
-                  The computer did not detect a clear choice from one/both users. 
-                                      Please try again.
-                {'*'*70}
+                {'*'*50}  
+                    No input detected from one/both users. 
+                            Please try again.
+                {'*'*50}
              """
+    draw_message = f"""
+                    {'*'*50} 
+                        We have a draw!! Have another go!
+                    {'*'*50}
+                """
     def print_won(usr_score,comp_score):
         won_message = f"""
                     {'*'*50}  
-                                Congratulations you won !!!
-                    You scored : {usr_score}  Computer scored : {comp_score}
+                            Congratulations you won !!!
+                        You scored : {usr_score}  Computer scored : {comp_score}
                     {'*'*50}
                 """
         print(won_message)
@@ -103,7 +99,7 @@ def play_game():
     def print_lost(usr_score,comp_score):
         lost_message = f"""
                 {'*'*50}  
-                    Unfortunately you lost !!!
+                        Unfortunately you lost !!!
                     Computer scored : {comp_score}   You scored : {usr_score}
                 {'*'*50}
                 """
@@ -113,6 +109,7 @@ def play_game():
     print(start_message)
   
     while ((game.user_score <= game.max_score) and (game.computer_score <= game.max_score)):
+         #if either player has scored 3 points
         if((game.user_score == game.max_score) or (game.computer_score == game.max_score)):
             if game.user_score > game.computer_score:
                 print_won(game.user_score, game.computer_score)
@@ -127,24 +124,17 @@ def play_game():
             game.no_tries += 1
             user_input = game.get_user_input()
             computer_input =game.get_computer_input()
-            if ((user_input == 'Rock') and (computer_input == 'Scissors')):
-                game.user_score  += 1
-            elif ((user_input == 'Paper') and (computer_input == 'Rock')):
-                game.user_score  += 1
-            elif ((user_input == 'Scissors') and (computer_input == 'Paper')):
+            if [user_input, computer_input] in [["Paper","Rock"], ["Scissors","Paper"], ["Rock","Scissors"]]:
                 game.user_score  += 1
             elif (user_input == 'Nothing' or computer_input == 'Nothing'):
                 print(nodetect_message)
             elif (user_input == computer_input):
-                print("We have a draw!! Have another go!")
+                print(draw_message)
             else: 
                 game.computer_score += 1
-               
-        print(f" Loop no_tries: {game.no_tries}") 
-        print(f" Loop Game user_score: {game.user_score}") 
-        print(f" Loop Game computer_score: {game.computer_score}") 
-    
-    
+        print(f"User Choice:   {user_input}     Computer Choice:   {computer_input}")       
+        print(f"User Score :     {game.user_score}       Computer Score:      {game.computer_score}     of {game.no_tries} tries ") 
+   
 
 if __name__ == '__main__':
-   play_game()
+    play_game()
