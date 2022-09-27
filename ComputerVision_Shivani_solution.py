@@ -29,8 +29,30 @@ class RockPaperScissors:
 
     # gets the user input from camera and returns a array showing the likelihood scores
     def get_user_input(self):
-        user_choice = self.choices[random.randint(0,self.no_of_choices-1)]
-        print(f" User chose: {user_choice}")
+        #user_choice = self.choices[random.randint(0,self.no_of_choices-1)]
+        #print(f" User chose: {user_choice}")
+        
+        ###for countdown seconds delay 
+        close_time=time.time() + self.countdown
+        
+        while time.time() <= close_time:
+            if time.time() > close_time:
+                break
+            else:
+                ret, frame = self.cap.read()
+                resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
+                image_np = np.array(resized_frame)
+                normalized_image = (image_np.astype(np.float32) / 127.0) - 1 # Normalize the image
+                self.data[0] = normalized_image
+                prediction = self.model.predict(self.data)
+                cv2.imshow('frame', frame)
+                print(f"Prediction: {prediction}")
+                #determine the predicted user input ny referencing choice
+                #choice_pos = prediction.argmax(axis=1)
+                #print(f"choice_pos: {choice_pos}")
+                user_choice = self.choices[prediction.argmax(axis=1)[0]]
+                print(f"User choice: {user_choice}")
+                
         return user_choice
        
 
@@ -64,15 +86,15 @@ def play_game():
              """
 
     nodetect_message = f"""
-                {'*'*75}  
+                {'*'*70}  
                   The computer did not detect a clear choice from one/both users. 
-                  Please try again.
-                {'*'*75}
+                                      Please try again.
+                {'*'*70}
              """
     def print_won(usr_score,comp_score):
         won_message = f"""
                     {'*'*50}  
-                    Congratulations you won !!!
+                                Congratulations you won !!!
                     You scored : {usr_score}  Computer scored : {comp_score}
                     {'*'*50}
                 """
