@@ -30,26 +30,23 @@ class RockPaperScissors:
         ###for countdown seconds delay 
         close_time=time.time() + self.countdown
         
-        while time.time() <= close_time:
-            if time.time() > close_time:
-                break
-            else:
-                ret, frame = self.cap.read()
-                resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
-                image_np = np.array(resized_frame)
-                normalized_image = (image_np.astype(np.float32) / 127.0) - 1 # Normalize the image
-                self.data[0] = normalized_image
-                prediction = self.model.predict(self.data)
-                cv2.imshow('frame', frame)
-                print(f"Prediction: {prediction}")
-                user_choice = self.choices[prediction.argmax(axis=1)[0]]
-                
-                
+        while close_time > time.time():
+            ret, frame = self.cap.read()
+            resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
+            image_np = np.array(resized_frame)
+            normalized_image = (image_np.astype(np.float32) / 127.0) - 1 # Normalize the image
+            self.data[0] = normalized_image
+            prediction = self.model.predict(self.data)
+            cv2.imshow('frame', frame)
+            print(f"Prediction: {prediction}")
+            user_choice = self.choices[prediction.argmax(axis=1)[0]]
+        
         return user_choice
        
 
     def get_computer_input(self):
-        computer_choice = self.choices[random.randint(0,self.no_of_choices-1)]
+        #computer choice can never be 'Nothing'
+        computer_choice = random.choice(self.choices[1:self.no_of_choices-1])
         return computer_choice 
 
     def cleanup(self):
